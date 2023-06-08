@@ -1,38 +1,39 @@
 <div class="row">
   <% for post in @posts %>
-    <div class="col-md-3 col-sm-6">
-      <h4>
-        <%# find user who created post %>
-        <% user = User.find_by({ "id" => post["user_id"] }) %>
-        <%# handle any potential bad data where the post is missing a user %>
-        <% if user %>
-          <%= user["first_name"] %> <%= user["last_name"] %>
-        <% else %>
-          anonymous
+    <div class="col-md-4 col-sm-6 mb-4">
+      <div class="card shadow">
+        <img src="<%= post.uploaded_image.attached? ? url_for(post.uploaded_image) : post.image %>" class="card-img-top" alt="Post Image">
+        <div class="card-body">
+          <h5 class="card-title text-center">
+            <% user = User.find_by(id: post.user_id) %>
+            <% if user %>
+              <%= user.first_name %> <%= user.last_name %>
+            <% else %>
+              anonymous
+            <% end %>
+          </h5>
+          <p class="card-text text-muted text-center"><%= post.body %></p>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <h6 class="mb-3">Comments</h6>
+            <% post.comments.each do |comment| %>
+              <p class="mb-1">
+                <strong><%= comment.user.first_name %> <%= comment.user.last_name %>:</strong>
+                <%= comment.body %>
+              </p>
+            <% end %>
+          </li>
+        </ul>
+        <% if @current_user %>
+          <div class="card-body">
+            <%= form_for([post, post.comments.build], html: { class: "mb-3" }) do |f| %>
+              <%= f.text_area :body, class: "form-control bg-light border-0 rounded", placeholder: "Add a comment", rows: 2 %>
+              <%= f.submit "Comment", class: "btn btn-primary btn-block mt-3" %>
+            <% end %>
+          </div>
         <% end %>
-      </h4>
-
-      <% if post.uploaded_image.attached? %>
-        <img src="<%= url_for(post.uploaded_image) %>" class="img-fluid">
-      <% else %>
-        <img src="<%= post["image"] %>" class="img-fluid">
-      <% end %>
-
-      <p><%= post["body"] %></p>
-
-      <h5>Comments</h5>
-      <% post.comments.each do |comment| %>
-        <p>
-          <strong><%= comment.user.first_name %> <%= comment.user.last_name %>:</strong>
-          <%= comment.body %>
-        </p>
-      <% end %>
-
-      <%= form_for([post, post.comments.build]) do |f| %>
-        <%= f.label :body, "New Comment" %>
-        <%= f.text_area :body %>
-        <%= f.submit "Add Comment" %>
-      <% end %>
+      </div>
     </div>
   <% end %>
 </div>
