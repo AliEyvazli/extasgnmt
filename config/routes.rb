@@ -3,7 +3,10 @@ Rails.application.routes.draw do
   get "/login", :controller => "sessions", :action => "new"
   get "/logout", :controller => "sessions", :action => "destroy"
 
-  resources "posts"
+  resources :posts do
+    resources :comments, only: :create
+  end
+
   resources "sessions"
   resources "users"
 end
