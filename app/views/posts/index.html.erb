@@ -31,6 +31,9 @@
               <%= f.text_area :body, class: "form-control bg-light border-0 rounded", placeholder: "Add a comment", rows: 2 %>
               <%= f.submit "Comment", class: "btn btn-primary btn-block mt-3" %>
             <% end %>
+            <%= form_with model: [ post, post.likes.build ], local: true do |form| %>
+              <%= form.submit "Like", class: "btn btn-primary btn-block mt-3" %>
+            <% end %>
           </div>
         <% end %>
       </div>
